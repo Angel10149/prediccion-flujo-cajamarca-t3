@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pronóstico de aforos en Cajamarca</title>
+<style>
+body{margin:0;background:#eef3f5;color:#193540;font:17px 'Segoe UI',sans-serif}main{max-width:1040px;margin:40px auto;padding:24px}h1{font-size:32px}section{background:white;padding:24px;margin:20px 0;border:1px solid #c9d9df;border-radius:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}label{display:block;margin:14px 0 6px}select,input,button{font:inherit;padding:11px;max-width:100%;box-sizing:border-box}select,input{width:100%;border:1px solid #96b1bc;border-radius:5px}button{background:#175b6b;color:white;border:0;border-radius:5px;margin-top:20px;cursor:pointer}output{font-size:30px;font-weight:600;display:block;margin-top:20px}table{border-collapse:collapse;width:100%;font-size:15px}td,th{padding:12px;text-align:left;border-bottom:1px solid #d4e0e4}img{width:100%}a{color:#175b6b}.sub{color:#4b6470} @media(max-width:650px){.grid{grid-template-columns:1fr}main{padding:14px;margin:10px auto}}
+</style>
+<main><h1>Pronóstico de aforos en Cajamarca</h1><p class="sub">Intersección Hoyos Rubio y Andrés Zevallos · Datos históricos de Cerna Loyola</p>
+<section><h2>Estimar el siguiente intervalo</h2><p id="modelo"></p><div class="grid"><div><label for="movimiento">Movimiento</label><select id="movimiento"></select><label for="hora">Inicio del intervalo que se quiere pronosticar</label><select id="hora"><option>12:15</option><option>12:30</option><option>12:45</option><option>18:15</option><option>18:30</option><option>18:45</option></select></div><div><label for="flujo">Vehículos contados en los 15 minutos anteriores</label><input id="flujo" type="number" min="0" max="1000" value="100" step="1"><label for="algoritmo">Modelo entrenado con aforos reales</label><select id="algoritmo"></select></div></div><button id="predecir">Calcular pronóstico</button><output id="salida" aria-live="polite"></output><p id="aviso"></p><p class="sub">Evaluación histórica con dos campañas y franjas de una hora. La transferencia al tránsito actual requiere nuevos aforos.</p></section>
+<section><h2>Comprobar con un caso real</h2><label for="caso">Intervalo de la campaña de prueba</label><select id="caso"></select><button id="cargar">Cargar aforo anterior y comparar</button><p id="comparacion" aria-live="polite"></p></section>
+<section><h2>Resultados de prueba</h2><p>24 pronósticos a 15 minutos. Selección del modelo mediante validación por bloques en la primera campaña.</p><table><thead><tr><th>Modelo</th><th>MAE</th><th>RMSE</th><th>R²</th></tr></thead><tbody id="metricas"></tbody></table><img src="resultados/predicciones.png" alt="Predicciones y observaciones por movimiento"></section>
+<p><a href="fuentes/Cerna_Loyola_2020.pdf">Consultar tesis original</a> · <a href="datos/aforos.csv">Descargar conteos</a> · <a href="resultados/predicciones.csv">Descargar evaluación</a></p></main>
+<script src="modelos.js"></script><script>
+const E=EXPERIMENTO;
+const byId=id=>document.getElementById(id);
+function evaluateTree(tree,x){let n=0;while(tree.left[n]!==-1)n=x[tree.feature[n]]<=tree.threshold[n]?tree.left[n]:tree.right[n];return tree.value[n];}
+function predict(name,x){const m=E.models[name];let result;
+ if(m.kind==='forest')result=m.trees.reduce((s,t)=>s+evaluateTree(t,x),0)/m.trees.length;
+ else{const z=x.map((v,i)=>(v-m.mean[i])/m.scale[i]);
+ if(m.kind==='ridge')result=m.intercept+z.reduce((s,v,i)=>s+v*m.coef[i],0);
+ else{const near=m.x.map((row,i)=>({d:row.reduce((s,v,j)=>s+(v-z[j])**2,0),i})).sort((a,b)=>a.d-b.d||a.i-b.i).slice(0,m.k);result=near.reduce((s,r)=>s+m.y[r.i],0)/m.k;}}
+ return Math.max(0,result);}
+function compute(){const v=Number(byId('flujo').value);if(byId('flujo').value===''||!Number.isInteger(v)||v<0||v>1000){byId('salida').textContent='Introduce un conteo entero entre 0 y 1000.';return null;}
+ const [h,min]=byId('hora').value.split(':').map(Number);const x=[v,h,min/15,...E.movements.map(m=>Number(m===byId('movimiento').value))];
+ const p=predict(byId('algoritmo').value,x);byId('salida').textContent=p.toFixed(1)+' vehículos / 15 min';
+ byId('aviso').textContent=v<E.training_ranges.lag_min||v>E.training_ranges.lag_max?'El conteo ingresado está fuera del rango observado en entrenamiento.':'Pronóstico calculado con los parámetros exportados del entrenamiento.';return p;}
+E.movements.forEach(m=>byId('movimiento').add(new Option(m,m)));
+Object.keys(E.models).forEach(m=>byId('algoritmo').add(new Option(m,m)));
+byId('algoritmo').value=E.winner;byId('modelo').textContent='Modelo seleccionado por validación interna: '+E.winner;
+E.test.forEach((r,i)=>byId('caso').add(new Option(r.movimiento+' · '+r.hora_inicio,i)));
+E.metrics.forEach(m=>{const tr=document.createElement('tr');[m.modelo,m.MAE.toFixed(2),m.RMSE.toFixed(2),m.R2.toFixed(3)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});byId('metricas').append(tr)});
+byId('predecir').onclick=()=>{byId('comparacion').textContent='';compute()};
+byId('cargar').onclick=()=>{const r=E.test[Number(byId('caso').value)];byId('movimiento').value=r.movimiento;byId('hora').value=r.hora_inicio;byId('flujo').value=r.lag;const p=compute();byId('comparacion').textContent='Observado: '+r.volumen+' vehículos. Error absoluto: '+Math.abs(p-Number(r.volumen)).toFixed(1)+'. Tabla '+r.tabla+', página '+r.pagina+'.';};
+compute();
+</script></html>

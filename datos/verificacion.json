@@ -1,0 +1,118 @@
+{
+  "sha256_pdf": "a27dd1299dab787010c83e8058591c931fd03fa7f341472b7dd190e622ea8e79",
+  "tablas": [
+    {
+      "pagina": 70,
+      "tabla": 11,
+      "total_publicado": 709,
+      "total_calculado": 709,
+      "correcto": true
+    },
+    {
+      "pagina": 71,
+      "tabla": 12,
+      "total_publicado": 533,
+      "total_calculado": 533,
+      "correcto": true
+    },
+    {
+      "pagina": 72,
+      "tabla": 13,
+      "total_publicado": 446,
+      "total_calculado": 446,
+      "correcto": true
+    },
+    {
+      "pagina": 73,
+      "tabla": 14,
+      "total_publicado": 351,
+      "total_calculado": 351,
+      "correcto": true
+    },
+    {
+      "pagina": 74,
+      "tabla": 15,
+      "total_publicado": 544,
+      "total_calculado": 544,
+      "correcto": true
+    },
+    {
+      "pagina": 75,
+      "tabla": 16,
+      "total_publicado": 497,
+      "total_calculado": 497,
+      "correcto": true
+    },
+    {
+      "pagina": 76,
+      "tabla": 17,
+      "total_publicado": 421,
+      "total_calculado": 421,
+      "correcto": true
+    },
+    {
+      "pagina": 77,
+      "tabla": 18,
+      "total_publicado": 367,
+      "total_calculado": 367,
+      "correcto": true
+    },
+    {
+      "pagina": 83,
+      "tabla": 23,
+      "total_publicado": 686,
+      "total_calculado": 686,
+      "correcto": true
+    },
+    {
+      "pagina": 84,
+      "tabla": 24,
+      "total_publicado": 524,
+      "total_calculado": 525,
+      "correcto": false
+    },
+    {
+      "pagina": 85,
+      "tabla": 25,
+      "total_publicado": 417,
+      "total_calculado": 417,
+      "correcto": true
+    },
+    {
+      "pagina": 86,
+      "tabla": 26,
+      "total_publicado": 320,
+      "total_calculado": 320,
+      "correcto": true
+    },
+    {
+      "pagina": 87,
+      "tabla": 27,
+      "total_publicado": 523,
+      "total_calculado": 523,
+      "correcto": true
+    },
+    {
+      "pagina": 88,
+      "tabla": 28,
+      "total_publicado": 511,
+      "total_calculado": 511,
+      "correcto": true
+    },
+    {
+      "pagina": 89,
+      "tabla": 29,
+      "total_publicado": 403,
+      "total_calculado": 403,
+      "correcto": true
+    },
+    {
+      "pagina": 90,
+      "tabla": 30,
+      "total_publicado": 348,
+      "total_calculado": 358,
+      "correcto": false
+    }
+  ],
+  "registros": 64
+}
