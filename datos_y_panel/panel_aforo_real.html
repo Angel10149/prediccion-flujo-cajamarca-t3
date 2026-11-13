@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aforo vehicular de Hoyos Rubio</title>
+<style>
+body{font:18px system-ui;background:#eef4f6;color:#143244;margin:0}
+main{max-width:720px;margin:8vh auto;padding:24px}
+section{background:white;border:1px solid #c5d9df;border-radius:16px;padding:24px}
+h1{margin:0} select{font:inherit;padding:8px;margin:8px 0 16px}
+output{display:block;font-size:2rem;font-weight:700;color:#125d6e}
+a{color:#125d6e}
+</style>
+<main>
+<h1>Aforo vehicular de Hoyos Rubio</h1>
+<p>12 de septiembre de 2022 · Segmento 01 · Sentido A</p>
+<section>
+<label for="intervalo">Intervalo del aforo</label><br>
+<select id="intervalo">
+<option value="158">18:00 a 18:15</option>
+<option value="130">18:15 a 18:30</option>
+<option value="151">18:30 a 18:45</option>
+<option value="136">18:45 a 19:00</option>
+<option value="132">19:00 a 19:15</option>
+<option value="110">19:15 a 19:30</option>
+<option value="117">19:30 a 19:45</option>
+<option value="94">19:45 a 20:00</option>
+</select>
+<output id="conteo" for="intervalo" aria-live="polite"></output>
+<p>Conteo histórico observado. Cobertura de 18:00 a 20:00.</p>
+</section>
+<p><a href="https://repositorio.unc.edu.pe/bitstream/handle/20.500.14074/6815/TESIS-CORREA%20PEREZ%20JEANMARCOS.pdf?isAllowed=y&amp;sequence=1">Tesis de Jeanmarcos Correa Pérez, tabla 31</a></p>
+</main>
+<script>
+const intervalo = document.querySelector('#intervalo');
+const conteo = document.querySelector('#conteo');
+function mostrarConteo() {
+    conteo.textContent = intervalo.value + ' vehículos en 15 minutos';
+}
+intervalo.addEventListener('change', mostrarConteo);
+mostrarConteo();
+</script>
+</html>
